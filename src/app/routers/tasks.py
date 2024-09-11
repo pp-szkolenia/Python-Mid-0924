@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Response
+from fastapi import APIRouter, HTTPException, status, Response, Query
 from fastapi.responses import JSONResponse
 
 from app.models import TaskBody
@@ -15,7 +15,10 @@ tasks_data = [
 
 @router.get("/tasks", description="Opis endpointa GET tasks!",
             tags=["tasks"])
-def get_tasks():
+def get_tasks(min_priority: int,
+              max_priority: int = Query(default=3, alias="maxPriority")):
+    print("!!!", min_priority, max_priority)
+
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content={"result": tasks_data})
 

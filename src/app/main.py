@@ -1,54 +1,11 @@
 from fastapi import FastAPI, HTTPException, status, Response
-from pydantic import BaseModel, PositiveInt, model_validator, constr
 from fastapi.responses import JSONResponse
+
+from app.models import TaskBody, UserBody
+from app.utils import get_item_index_by_id, get_item_by_id
 
 
 app = FastAPI()
-
-
-class TaskBody(BaseModel):
-    """
-    TaskBody jest modelem request body używanym w endpoincie POST /tasks
-    Waliduje on poprawność użytego w requeście body
-    """
-    description: str
-    priority: PositiveInt  # int | None = None  # dopuszczamy też None i None jest domyślne
-    is_complete: bool = False  # domyślnie jest False
-
-    @model_validator(mode="after")
-    def validate(self):
-        """
-        mode - after/before mówi o tym czy walidator odpala się przed walidacją
-                typów czy po
-        Tutaj odbywa się bardziej zaawansowana walidacja modelu danych
-        Przyjmujemy i zwracamy self
-        """
-        # if len(self.description) > self.priority:
-        #     raise AssertionError("Description must be less than priority")
-        return self
-
-
-class UserBody(BaseModel):
-    username: str
-    password: constr(min_length=8)
-    is_admin: bool = False
-
-
-def get_item_by_id(items: list, id_: int):
-    for item in items:
-        if item["id"] == id_:
-            result = item
-            break
-    else:
-        result = None
-
-    return result
-
-
-def get_item_index_by_id(items_list, id_):
-    for i, item in enumerate(items_list):
-        if item["id"] == id_:
-            return i
 
 
 tasks_data = [

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Response
 from pydantic import BaseModel, PositiveInt, model_validator, constr
 from fastapi.responses import JSONResponse
 
@@ -45,6 +45,12 @@ def get_item_by_id(items: list, id_: int):
     return result
 
 
+def get_item_index_by_id(items_list, id_):
+    for i, item in enumerate(items_list):
+        if item["id"] == id_:
+            return i
+
+
 tasks_data = [
     {"id": 1, "description": "Learn FastAPI", "priority": 3, "is_complete": True},
     {"id": 2, "description": "Do exercises", "priority": 2, "is_complete": False}
@@ -88,6 +94,17 @@ def create_task(body: TaskBody):
     return {"message": "New task added", "details": new_task}
 
 
+@app.delete("/tasks/{id_}")
+def delete_task_by_id(id_: int):
+    target_index = get_item_index_by_id(tasks_data, id_)
+    if target_index is None:
+        message = {"error": f"Task with id {id_} does not exist"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
+
+    tasks_data.pop(target_index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @app.get("/users/")
 def get_users():
     return JSONResponse(status_code=status.HTTP_200_OK, content={"result": users_data})
@@ -111,3 +128,14 @@ def create_user(body: UserBody):
     users_data.append(new_user)
 
     return {"message": "New user added", "details": new_user}
+
+
+@app.delete("/users/{id_}")
+def delete_user_by_id(id_: int):
+    target_index = get_item_index_by_id(users_data, id_)
+    if target_index is None:
+        message = {"error": f"User with id {id_} does not exist"}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=message)
+
+    users_data.pop(target_index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

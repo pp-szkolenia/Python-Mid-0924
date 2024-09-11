@@ -1,0 +1,5 @@
+description = "Learn Python"
+priority = 3
+time_logged = 6.25
+is_complete = false
+tags = [ "edu", "dev",]

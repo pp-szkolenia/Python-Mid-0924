@@ -1,0 +1,11 @@
+[[db]]
+user = "postgres"
+password = "postgres"
+
+[[db]]
+user = "postgres1"
+password = "postgres1"
+
+[app]
+server = "0.0.0.0"
+port = 8000

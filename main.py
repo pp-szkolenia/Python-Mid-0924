@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body
-from pydantic import BaseModel, PositiveInt, model_validator
+from pydantic import BaseModel, PositiveInt, model_validator, constr
 
 
 app = FastAPI()
@@ -25,6 +25,12 @@ class TaskBody(BaseModel):
         # if len(self.description) > self.priority:
         #     raise AssertionError("Description must be less than priority")
         return self
+
+
+class UserBody(BaseModel):
+    username: str
+    password: constr(min_length=8)
+    is_admin: bool = False
 
 
 tasks_data = [
@@ -66,8 +72,10 @@ def get_users():
 
 
 @app.post("/users/")
-def create_user(body: dict = Body(...)):
-    new_user = body
+def create_user(body: UserBody):
+    new_user = body.model_dump()
+    user_id = len(users_data) + 1
+    new_user["id"] = user_id
     users_data.append(new_user)
 
     return {"message": "New user added", "details": new_user}

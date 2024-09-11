@@ -65,6 +65,12 @@ def get_tasks():
     return {"result": tasks_data}
 
 
+@app.get("/tasks/{id_}")
+def get_task_by_id(id_: int):
+    target_task = get_item_by_id(tasks_data, id_)
+    return {"result": target_task}
+
+
 @app.post("/tasks")
 def create_task(body: TaskBody):
     new_task = body.model_dump()

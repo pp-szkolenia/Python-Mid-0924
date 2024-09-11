@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, PositiveInt, model_validator, constr
+from fastapi.responses import JSONResponse
 
 
 app = FastAPI()
@@ -62,7 +63,8 @@ def root():
 
 @app.get("/tasks")
 def get_tasks():
-    return {"result": tasks_data}
+    return JSONResponse(status_code=status.HTTP_200_OK,
+                        content={"result": tasks_data})
 
 
 @app.get("/tasks/{id_}")
@@ -75,7 +77,7 @@ def get_task_by_id(id_: int):
     return {"result": target_task}
 
 
-@app.post("/tasks")
+@app.post("/tasks", status_code=status.HTTP_201_CREATED)
 def create_task(body: TaskBody):
     new_task = body.model_dump()
     task_id = len(tasks_data) + 1
@@ -83,8 +85,7 @@ def create_task(body: TaskBody):
 
     tasks_data.append(new_task)
 
-    return {"message": "New task added",
-            "details": new_task}
+    return {"message": "New task added", "details": new_task}
 
 
 @app.get("/users/")
